@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-05-26T04:44:32.281Z",
+  "source": {
+    "name": "Wilayah.id public mirror",
+    "url": "https://wilayah.id",
+    "api_base_url": "https://wilayah.id/api",
+    "version": "2025-07-04",
+    "retrieved_at": "2026-05-26T04:44:32.281Z",
+    "note": "Non-authoritative fallback mirror. It documents data derived from Kepmendagri and cahyadsn/wilayah."
+  },
+  "scope": {
+    "complete": false,
+    "province_codes": [
+      "31"
+    ]
+  },
+  "counts": {
+    "provinces": 1,
+    "cities": 6,
+    "districts": 44,
+    "villages": 267
+  }
+}

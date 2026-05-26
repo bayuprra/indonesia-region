@@ -13,7 +13,7 @@ The project should prefer generated, versioned JSON data over live frontend call
 
 ## Current Status
 
-This is an initial Express app scaffold.
+This is an Express app with generated Indonesian administrative region JSON and API routes.
 
 Implemented:
 
@@ -21,12 +21,12 @@ Implemented:
 - Static file serving from `public/`
 - Server-side Supabase client wiring
 - Cloudflare Workers deployment configuration
+- Region API routes for provinces, cities/regencies, districts, and villages
+- Region data generator and validator
+- Versioned generated JSON under `data/regions/`
 
 Not yet implemented:
 
-- Region data generator
-- Region validation script
-- Region API routes
 - Protected update/regeneration route
 - Automated tests, linting, formatting, or build scripts
 
@@ -78,12 +78,16 @@ Only commands currently defined in `package.json` are listed here.
 npm install
 npm start
 npm run dev
+npm run generate:regions
+npm run validate:regions
 npm run cloudflare:dev
 npm run deploy
 ```
 
 - `npm start`: runs `node src/server.js`
 - `npm run dev`: runs `node --watch src/server.js`
+- `npm run generate:regions`: generates versioned region JSON from the configured server-side source
+- `npm run validate:regions`: validates generated region JSON shape and parent-child links
 - `npm run cloudflare:dev`: runs the Cloudflare Worker locally with Wrangler
 - `npm run deploy`: deploys the Worker with Wrangler
 - Build: Not yet defined
@@ -116,6 +120,62 @@ Example response:
 }
 ```
 
+### Region Status
+
+```http
+GET /api/regions/status
+```
+
+Returns generated data readiness, present/missing files, and metadata.
+
+### Metadata
+
+```http
+GET /api/regions/metadata
+```
+
+### Provinces
+
+```http
+GET /api/regions/provinces
+GET /api/provinces
+```
+
+### Cities/Regencies
+
+```http
+GET /api/regions/cities?province_code=31
+GET /api/cities?province_code=31
+```
+
+### Districts/Kecamatan
+
+```http
+GET /api/regions/districts?city_code=3174
+GET /api/districts?city_code=3174
+```
+
+### Villages/Kelurahan/Desa
+
+```http
+GET /api/regions/villages?district_code=317409
+GET /api/villages?district_code=317409
+```
+
+Responses use the expected string-code shape:
+
+```json
+{
+  "data": [
+    {
+      "code": "3174091001",
+      "name": "JAGAKARSA",
+      "district_code": "317409"
+    }
+  ]
+}
+```
+
 ## Cloudflare Deployment
 
 Cloudflare Workers is configured in `wrangler.jsonc`.
@@ -138,7 +198,7 @@ Preferred data source order:
 2. API.co.id Indonesia Regional API as a fallback source.
 3. Other public mirrors only when documented as non-authoritative fallback sources.
 
-Generated records should keep codes as strings and keep code/name separate:
+Generated records keep codes as strings and keep code/name separate:
 
 ```json
 {
@@ -159,9 +219,38 @@ Child records should include parent codes:
 
 Do not include a combined `code-name` field in generated JSON. Client applications may build and store that format themselves.
 
-## Planned Data Layout
+## Region Data
 
-No generator exists yet. When added, use a versioned layout such as:
+The current committed dataset is intentionally scoped to DKI Jakarta (`province_code=31`) so the API is functional while keeping the initial checkpoint small. Metadata marks this as a partial dataset:
+
+```json
+{
+  "scope": {
+    "complete": false,
+    "province_codes": ["31"]
+  }
+}
+```
+
+Generate another province:
+
+```sh
+npm run generate:regions -- --province-code 32
+```
+
+Generate the full Indonesia dataset:
+
+```sh
+npm run generate:regions -- --all --concurrency 8
+```
+
+Validate generated data:
+
+```sh
+npm run validate:regions
+```
+
+Generated data uses this versioned layout:
 
 ```text
 data/
@@ -184,17 +273,13 @@ scripts/
   validate-regions.js
 ```
 
-Scoped payloads can be added if the frontend should not load all levels at once:
+For Cloudflare/static access, the generator also writes a mirror to:
 
 ```text
-data/regions/current/cities/{province_code}.json
-data/regions/current/districts/{city_code}.json
-data/regions/current/villages/{district_code}.json
+public/regions/current/
 ```
 
-## Planned API Shape
-
-The intended selection flow is:
+The API selection flow is:
 
 ```text
 GET provinces

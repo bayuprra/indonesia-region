@@ -1,0 +1,222 @@
+[
+  {
+    "code": "310101",
+    "name": "KEPULAUAN SERIBU UTARA",
+    "city_code": "3101"
+  },
+  {
+    "code": "310102",
+    "name": "KEPULAUAN SERIBU SELATAN",
+    "city_code": "3101"
+  },
+  {
+    "code": "317101",
+    "name": "GAMBIR",
+    "city_code": "3171"
+  },
+  {
+    "code": "317102",
+    "name": "SAWAH BESAR",
+    "city_code": "3171"
+  },
+  {
+    "code": "317103",
+    "name": "KEMAYORAN",
+    "city_code": "3171"
+  },
+  {
+    "code": "317104",
+    "name": "SENEN",
+    "city_code": "3171"
+  },
+  {
+    "code": "317105",
+    "name": "CEMPAKA PUTIH",
+    "city_code": "3171"
+  },
+  {
+    "code": "317106",
+    "name": "MENTENG",
+    "city_code": "3171"
+  },
+  {
+    "code": "317107",
+    "name": "TANAH ABANG",
+    "city_code": "3171"
+  },
+  {
+    "code": "317108",
+    "name": "JOHAR BARU",
+    "city_code": "3171"
+  },
+  {
+    "code": "317201",
+    "name": "PENJARINGAN",
+    "city_code": "3172"
+  },
+  {
+    "code": "317202",
+    "name": "TANJUNG PRIOK",
+    "city_code": "3172"
+  },
+  {
+    "code": "317203",
+    "name": "KOJA",
+    "city_code": "3172"
+  },
+  {
+    "code": "317204",
+    "name": "CILINCING",
+    "city_code": "3172"
+  },
+  {
+    "code": "317205",
+    "name": "PADEMANGAN",
+    "city_code": "3172"
+  },
+  {
+    "code": "317206",
+    "name": "KELAPA GADING",
+    "city_code": "3172"
+  },
+  {
+    "code": "317301",
+    "name": "CENGKARENG",
+    "city_code": "3173"
+  },
+  {
+    "code": "317302",
+    "name": "GROGOL PETAMBURAN",
+    "city_code": "3173"
+  },
+  {
+    "code": "317303",
+    "name": "TAMAN SARI",
+    "city_code": "3173"
+  },
+  {
+    "code": "317304",
+    "name": "TAMBORA",
+    "city_code": "3173"
+  },
+  {
+    "code": "317305",
+    "name": "KEBON JERUK",
+    "city_code": "3173"
+  },
+  {
+    "code": "317306",
+    "name": "KALIDERES",
+    "city_code": "3173"
+  },
+  {
+    "code": "317307",
+    "name": "PAL MERAH",
+    "city_code": "3173"
+  },
+  {
+    "code": "317308",
+    "name": "KEMBANGAN",
+    "city_code": "3173"
+  },
+  {
+    "code": "317401",
+    "name": "TEBET",
+    "city_code": "3174"
+  },
+  {
+    "code": "317402",
+    "name": "SETIABUDI",
+    "city_code": "3174"
+  },
+  {
+    "code": "317403",
+    "name": "MAMPANG PRAPATAN",
+    "city_code": "3174"
+  },
+  {
+    "code": "317404",
+    "name": "PASAR MINGGU",
+    "city_code": "3174"
+  },
+  {
+    "code": "317405",
+    "name": "KEBAYORAN LAMA",
+    "city_code": "3174"
+  },
+  {
+    "code": "317406",
+    "name": "CILANDAK",
+    "city_code": "3174"
+  },
+  {
+    "code": "317407",
+    "name": "KEBAYORAN BARU",
+    "city_code": "3174"
+  },
+  {
+    "code": "317408",
+    "name": "PANCORAN",
+    "city_code": "3174"
+  },
+  {
+    "code": "317409",
+    "name": "JAGAKARSA",
+    "city_code": "3174"
+  },
+  {
+    "code": "317410",
+    "name": "PESANGGRAHAN",
+    "city_code": "3174"
+  },
+  {
+    "code": "317501",
+    "name": "MATRAMAN",
+    "city_code": "3175"
+  },
+  {
+    "code": "317502",
+    "name": "PULOGADUNG",
+    "city_code": "3175"
+  },
+  {
+    "code": "317503",
+    "name": "JATINEGARA",
+    "city_code": "3175"
+  },
+  {
+    "code": "317504",
+    "name": "KRAMATJATI",
+    "city_code": "3175"
+  },
+  {
+    "code": "317505",
+    "name": "PASAR REBO",
+    "city_code": "3175"
+  },
+  {
+    "code": "317506",
+    "name": "CAKUNG",
+    "city_code": "3175"
+  },
+  {
+    "code": "317507",
+    "name": "DUREN SAWIT",
+    "city_code": "3175"
+  },
+  {
+    "code": "317508",
+    "name": "MAKASAR",
+    "city_code": "3175"
+  },
+  {
+    "code": "317509",
+    "name": "CIRACAS",
+    "city_code": "3175"
+  },
+  {
+    "code": "317510",
+    "name": "CIPAYUNG",
+    "city_code": "3175"
+  }
+]

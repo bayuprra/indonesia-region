@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
+    "generate:regions": "node scripts/generate-regions.js",
+    "validate:regions": "node scripts/validate-regions.js",
     "cloudflare:dev": "wrangler dev",
     "deploy": "wrangler deploy"
   },
