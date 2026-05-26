@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const { getSupabaseConfigStatus } = require('./lib/supabase');
 const { getRegionsStatus } = require('./lib/regions-store');
+const { denyRegionJson } = require('./middleware/deny-region-json');
 const { createAuthRouter } = require('./routes/auth');
 const { createAdminRegionsRouter } = require('./routes/admin-regions');
 const { createRegionsRouter } = require('./routes/regions');
@@ -12,6 +13,7 @@ function createApp() {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(denyRegionJson);
   app.use(express.static(path.join(__dirname, '..', 'public')));
 
   app.get('/api/health', (req, res) => {

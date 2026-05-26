@@ -12,6 +12,7 @@ All responses are JSON. Region codes are strings and must be treated as strings 
 
 Region data endpoints require a Supabase user access token. Use `POST /api/auth/login` to obtain one.
 Users must exist in Supabase Auth before they can sign in.
+Direct region `.json` file access is blocked. Use authenticated API routes instead.
 
 ## Health
 
@@ -471,6 +472,18 @@ Example:
 ```json
 {
   "error": "Not Found"
+}
+```
+
+### Direct JSON Access Not Allowed
+
+Status: `403`
+
+Example:
+
+```json
+{
+  "error": "Direct region JSON access is not allowed"
 }
 ```
 

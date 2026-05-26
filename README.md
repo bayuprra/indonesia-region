@@ -154,6 +154,8 @@ Region data routes require a Supabase user access token:
 Authorization: Bearer <access_token>
 ```
 
+Direct region `.json` file access is blocked. Clients must use authenticated API routes.
+
 ### Cities/Regencies
 
 ```http
