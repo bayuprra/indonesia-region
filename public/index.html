@@ -3,16 +3,77 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Express App</title>
+    <title>Indonesia Regions</title>
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
-    <main class="page">
-      <section class="panel">
-        <p class="eyebrow">Express.js</p>
-        <h1>Your app is running.</h1>
-        <p>Use <code>/api/health</code> to check the server status.</p>
+    <main class="app-shell">
+      <section id="login-view" class="auth-panel">
+        <div>
+          <p class="eyebrow">Indonesia Regions</p>
+          <h1>Sign in</h1>
+        </div>
+        <form id="login-form" class="form-grid">
+          <label>
+            Email
+            <input id="email" name="email" type="email" autocomplete="email" required>
+          </label>
+          <label>
+            Password
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
+          </label>
+          <button type="submit">Sign in</button>
+          <p id="login-error" class="error-message" hidden></p>
+        </form>
+      </section>
+
+      <section id="regions-view" class="regions-view" hidden>
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Indonesia Regions</p>
+            <h1>Administrative Data</h1>
+          </div>
+          <div class="session-actions">
+            <span id="session-email"></span>
+            <button id="logout-button" type="button">Sign out</button>
+          </div>
+        </header>
+
+        <section class="selector-grid">
+          <label>
+            Province
+            <select id="province-select"></select>
+          </label>
+          <label>
+            City / Regency
+            <select id="city-select"></select>
+          </label>
+          <label>
+            District
+            <select id="district-select"></select>
+          </label>
+        </section>
+
+        <section class="data-panel">
+          <div class="panel-header">
+            <h2>Villages</h2>
+            <span id="village-count">0 records</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Name</th>
+                </tr>
+              </thead>
+              <tbody id="villages-body"></tbody>
+            </table>
+          </div>
+        </section>
+        <p id="app-error" class="error-message" hidden></p>
       </section>
     </main>
+    <script src="/app.js"></script>
   </body>
 </html>

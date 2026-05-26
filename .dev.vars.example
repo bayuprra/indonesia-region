@@ -1,5 +1,6 @@
 # Copy this to .dev.vars for `npm run cloudflare:dev`.
 # Do not commit .dev.vars.
 SUPABASE_URL=
+SUPABASE_PUBLISHABLE_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 ADMIN_API_TOKEN=

@@ -24,10 +24,10 @@ Implemented:
 - Region API routes for provinces, cities/regencies, districts, and villages
 - Region data generator and validator
 - Versioned generated JSON under `data/regions/`
+- Protected server-side region regeneration route
 
 Not yet implemented:
 
-- Protected update/regeneration route
 - Automated tests, linting, formatting, or build scripts
 
 ## Requirements
@@ -49,6 +49,9 @@ cp .dev.vars.example .dev.vars
 ```
 
 Use `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` only on the server side. Do not place the service role key in frontend code or static files.
+
+Set `SUPABASE_PUBLISHABLE_KEY` for the server-side login route.
+Set `ADMIN_API_TOKEN` before using protected regeneration routes.
 
 ## Run
 
@@ -115,7 +118,9 @@ Example response:
   "services": {
     "supabase": {
       "configured": false,
+      "authConfigured": false,
       "urlConfigured": false,
+      "publishableKeyConfigured": false,
       "serviceRoleKeyConfigured": false
     }
   }
@@ -141,6 +146,12 @@ GET /api/regions/metadata
 ```http
 GET /api/regions/provinces
 GET /api/provinces
+```
+
+Region data routes require a Supabase user access token:
+
+```http
+Authorization: Bearer <access_token>
 ```
 
 ### Cities/Regencies
@@ -187,6 +198,7 @@ Before deploying, authenticate Wrangler and set server-side secrets:
 ```sh
 npx wrangler login
 npx wrangler secret put SUPABASE_URL
+npx wrangler secret put SUPABASE_PUBLISHABLE_KEY
 npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
 npx wrangler secret put ADMIN_API_TOKEN
 npm run deploy
@@ -275,12 +287,6 @@ scripts/
   validate-regions.js
 ```
 
-For Cloudflare/static access, the generator also writes a mirror to:
-
-```text
-public/regions/current/
-```
-
 The API selection flow is:
 
 ```text
@@ -291,6 +297,26 @@ GET villages/kelurahan/desa by district code
 ```
 
 Update/regeneration routes must be protected with an admin token or API key from environment variables.
+
+Regenerate through the protected server route:
+
+```sh
+curl -X POST http://localhost:3001/api/admin/regions/regenerate \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ADMIN_API_TOKEN" \
+  -d '{"province_codes":["31"],"concurrency":8}'
+```
+
+Generate all provinces:
+
+```sh
+curl -X POST http://localhost:3001/api/admin/regions/regenerate \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ADMIN_API_TOKEN" \
+  -d '{"all":true,"concurrency":8}'
+```
+
+The route runs server-side, writes `data/regions/current`, creates a timestamped version, and validates the output.
 
 ## Security
 

@@ -2,6 +2,8 @@ const path = require('path');
 const express = require('express');
 const { getSupabaseConfigStatus } = require('./lib/supabase');
 const { getRegionsStatus } = require('./lib/regions-store');
+const { createAuthRouter } = require('./routes/auth');
+const { createAdminRegionsRouter } = require('./routes/admin-regions');
 const { createRegionsRouter } = require('./routes/regions');
 
 function createApp() {
@@ -24,7 +26,9 @@ function createApp() {
     });
   });
 
+  app.use('/api/auth', createAuthRouter());
   app.use('/api/regions', regionsRouter);
+  app.use('/api/admin/regions', createAdminRegionsRouter(express));
 
   app.get('/api/provinces', (req, res, next) => {
     req.url = '/provinces';

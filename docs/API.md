@@ -10,6 +10,9 @@ The default runtime port is `3000`. This workspace currently runs the local serv
 
 All responses are JSON. Region codes are strings and must be treated as strings by clients.
 
+Region data endpoints require a Supabase user access token. Use `POST /api/auth/login` to obtain one.
+Users must exist in Supabase Auth before they can sign in.
+
 ## Health
 
 ### `GET /api/health`
@@ -32,7 +35,9 @@ Response:
   "services": {
     "supabase": {
       "configured": true,
+      "authConfigured": true,
       "urlConfigured": true,
+      "publishableKeyConfigured": true,
       "serviceRoleKeyConfigured": true
     },
     "regions": {
@@ -69,6 +74,12 @@ Returns whether generated region files are present, plus metadata when available
 
 Returns source, generation, scope, and count metadata.
 
+Authentication:
+
+```http
+Authorization: Bearer <access_token>
+```
+
 Example response:
 
 ```json
@@ -95,6 +106,46 @@ Example response:
 }
 ```
 
+## Authentication
+
+### `POST /api/auth/login`
+
+Signs in with Supabase email/password auth and returns a user access token.
+
+Request:
+
+```json
+{
+  "email": "user@example.com",
+  "password": "password"
+}
+```
+
+Response:
+
+```json
+{
+  "user": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "email": "user@example.com"
+  },
+  "session": {
+    "access_token": "<jwt>",
+    "refresh_token": "<refresh-token>",
+    "expires_at": 1770000000,
+    "token_type": "bearer"
+  }
+}
+```
+
+### `GET /api/auth/me`
+
+Returns the authenticated user for the provided bearer token.
+
+### `POST /api/auth/logout`
+
+Returns `{"status":"ok"}`. The browser clears the local session token.
+
 ## Provinces
 
 ### `GET /api/regions/provinces`
@@ -106,6 +157,12 @@ GET /api/provinces
 ```
 
 Returns all generated provinces.
+
+Authentication:
+
+```http
+Authorization: Bearer <access_token>
+```
 
 Example:
 
@@ -137,6 +194,12 @@ GET /api/cities?province_code={province_code}
 ```
 
 Returns kabupaten/kota records for a province.
+
+Authentication:
+
+```http
+Authorization: Bearer <access_token>
+```
 
 Query parameters:
 
@@ -176,6 +239,12 @@ GET /api/districts?city_code={city_code}
 
 Returns kecamatan records for a city/regency.
 
+Authentication:
+
+```http
+Authorization: Bearer <access_token>
+```
+
 Query parameters:
 
 | Name | Required | Description |
@@ -214,6 +283,12 @@ GET /api/villages?district_code={district_code}
 
 Returns kelurahan/desa records for a district.
 
+Authentication:
+
+```http
+Authorization: Bearer <access_token>
+```
+
 Query parameters:
 
 | Name | Required | Description |
@@ -240,21 +315,109 @@ Response:
 }
 ```
 
-## Static JSON
+## Admin Regeneration
 
-The current generated files are also served as static JSON:
+### `POST /api/admin/regions/regenerate`
 
-```text
-/regions/current/metadata.json
-/regions/current/provinces.json
-/regions/current/cities.json
-/regions/current/districts.json
-/regions/current/villages.json
+Regenerates region JSON server-side, writes the current dataset, creates a timestamped version, and validates the generated output.
+
+This endpoint requires `ADMIN_API_TOKEN` to be configured on the server.
+
+Authentication headers, choose one:
+
+```http
+Authorization: Bearer <ADMIN_API_TOKEN>
 ```
 
-These files are useful for CDN/static access, including Cloudflare assets.
+```http
+x-admin-token: <ADMIN_API_TOKEN>
+```
+
+Regenerate selected provinces:
+
+```sh
+curl -X POST http://localhost:3001/api/admin/regions/regenerate \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ADMIN_API_TOKEN" \
+  -d '{"province_codes":["31"],"concurrency":8}'
+```
+
+Regenerate all provinces:
+
+```sh
+curl -X POST http://localhost:3001/api/admin/regions/regenerate \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ADMIN_API_TOKEN" \
+  -d '{"all":true,"concurrency":8}'
+```
+
+Request body:
+
+| Name | Required | Description |
+| --- | --- | --- |
+| `province_codes` | Required unless `all=true` | Array of province codes, or a comma-separated string. |
+| `all` | Required unless `province_codes` is set | Boolean. When `true`, regenerates all provinces and children. |
+| `concurrency` | No | Fetch concurrency from `1` to `16`. Defaults to `8`. |
+
+Success response:
+
+```json
+{
+  "status": "ok",
+  "metadata": {
+    "generated_at": "2026-05-26T04:44:32.281Z",
+    "scope": {
+      "complete": false,
+      "province_codes": ["31"]
+    },
+    "counts": {
+      "provinces": 1,
+      "cities": 6,
+      "districts": 44,
+      "villages": 267
+    }
+  },
+  "version_dir": "/path/to/data/regions/versions/2026-05-26T04-44-35Z"
+}
+```
 
 ## Errors
+
+### Authentication Required
+
+Status: `401`
+
+Example:
+
+```json
+{
+  "error": "Authentication required"
+}
+```
+
+### Admin Token Not Configured
+
+Status: `503`
+
+Example:
+
+```json
+{
+  "error": "Admin API token is not configured"
+}
+```
+
+### Unauthorized
+
+Status: `401`
+
+Example:
+
+```json
+{
+  "error": "Unauthorized"
+}
+```
 
 ### Missing Query Parameter
 
@@ -265,6 +428,24 @@ Example:
 ```json
 {
   "error": "province_code is required"
+}
+```
+
+### Invalid Regeneration Request
+
+Status: `400`
+
+Examples:
+
+```json
+{
+  "error": "Choose all=true or provide province_codes"
+}
+```
+
+```json
+{
+  "error": "concurrency must be an integer from 1 to 16"
 }
 ```
 

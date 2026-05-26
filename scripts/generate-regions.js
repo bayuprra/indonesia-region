@@ -10,7 +10,7 @@ const SOURCE = {
 };
 
 const DEFAULT_OUT_DIR = path.join(__dirname, '..', 'data', 'regions', 'current');
-const DEFAULT_PUBLIC_DIR = path.join(__dirname, '..', 'public', 'regions', 'current');
+const DEFAULT_PUBLIC_DIR = null;
 const DEFAULT_VERSION_ROOT = path.join(__dirname, '..', 'data', 'regions', 'versions');
 
 function parseArgs(argv) {
@@ -72,7 +72,7 @@ Options:
   --all                   Generate all provinces and children.
   --concurrency <n>       Parallel fetches for child endpoints. Default: 8.
   --out <dir>             Current data output directory.
-  --public-out <dir>      Static public mirror output directory.
+  --public-out <dir>      Optional static public mirror output directory.
   --no-public-copy        Do not write the public mirror.
 `);
 }
@@ -189,11 +189,16 @@ function writeDataset(outDir, dataset) {
 }
 
 async function generateRegions(options) {
+  const normalizedOptions = {
+    ...options,
+    provinceCodes: (options.provinceCodes || []).filter(Boolean).map(normalizeCode),
+    concurrency: options.concurrency || 8
+  };
   const generationDate = new Date();
   const { records: allProvinces, sourceUpdatedAt } = await fetchProvinces();
-  const selectedProvinceCodes = options.all
+  const selectedProvinceCodes = normalizedOptions.all
     ? allProvinces.map((province) => province.code)
-    : options.provinceCodes;
+    : normalizedOptions.provinceCodes;
 
   if (selectedProvinceCodes.length === 0) {
     throw new Error('Choose --all or at least one --province-code');
@@ -209,13 +214,13 @@ async function generateRegions(options) {
   }
 
   console.log(`Fetching cities for ${provinces.length} province(s)`);
-  const cities = (await mapWithConcurrency(provinces, options.concurrency, (province) => fetchCities(province.code))).flat();
+  const cities = (await mapWithConcurrency(provinces, normalizedOptions.concurrency, (province) => fetchCities(province.code))).flat();
 
   console.log(`Fetching districts for ${cities.length} city/regency record(s)`);
-  const districts = (await mapWithConcurrency(cities, options.concurrency, fetchDistricts)).flat();
+  const districts = (await mapWithConcurrency(cities, normalizedOptions.concurrency, fetchDistricts)).flat();
 
   console.log(`Fetching villages for ${districts.length} district record(s)`);
-  const villages = (await mapWithConcurrency(districts, options.concurrency, fetchVillages)).flat();
+  const villages = (await mapWithConcurrency(districts, normalizedOptions.concurrency, fetchVillages)).flat();
 
   const metadata = {
     generated_at: generationDate.toISOString(),
@@ -228,7 +233,7 @@ async function generateRegions(options) {
       note: SOURCE.note
     },
     scope: {
-      complete: Boolean(options.all),
+      complete: Boolean(normalizedOptions.all),
       province_codes: selectedProvinceCodes
     },
     counts: {
@@ -288,5 +293,11 @@ if (require.main === module) {
 }
 
 module.exports = {
-  generateRegions
+  DEFAULT_OUT_DIR,
+  DEFAULT_PUBLIC_DIR,
+  DEFAULT_VERSION_ROOT,
+  generateRegions,
+  normalizeCode,
+  timestampForPath,
+  writeDataset
 };

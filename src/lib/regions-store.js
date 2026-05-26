@@ -11,6 +11,14 @@ const DATASETS = {
   villages: 'villages.json'
 };
 
+const BUNDLED_DATASETS = {
+  metadata: require('../../data/regions/current/metadata.json'),
+  provinces: require('../../data/regions/current/provinces.json'),
+  cities: require('../../data/regions/current/cities.json'),
+  districts: require('../../data/regions/current/districts.json'),
+  villages: require('../../data/regions/current/villages.json')
+};
+
 function getRegionsDir() {
   return process.env.REGIONS_DATA_DIR || DEFAULT_REGIONS_DIR;
 }
@@ -30,6 +38,10 @@ function readDataset(name) {
   const filePath = path.join(getRegionsDir(), fileName);
 
   if (!fs.existsSync(filePath)) {
+    if (BUNDLED_DATASETS[name]) {
+      return BUNDLED_DATASETS[name];
+    }
+
     const error = new Error(`Regions dataset not found: ${fileName}`);
     error.code = 'REGIONS_DATASET_NOT_FOUND';
     throw error;
@@ -42,19 +54,23 @@ function getRegionsStatus() {
   const dir = getRegionsDir();
   const files = Object.values(DATASETS);
   const presentFiles = files.filter((fileName) => fs.existsSync(path.join(dir, fileName)));
-  const ready = presentFiles.length === files.length;
+  const bundledFiles = Object.keys(BUNDLED_DATASETS).map((name) => DATASETS[name]);
+  const availableFiles = Array.from(new Set([...presentFiles, ...bundledFiles]));
+  const ready = availableFiles.length === files.length;
 
   let metadata = null;
 
   if (fs.existsSync(path.join(dir, DATASETS.metadata))) {
     metadata = readDataset('metadata');
+  } else if (BUNDLED_DATASETS.metadata) {
+    metadata = BUNDLED_DATASETS.metadata;
   }
 
   return {
     ready,
     dataDir: dir,
-    presentFiles,
-    missingFiles: files.filter((fileName) => !presentFiles.includes(fileName)),
+    presentFiles: availableFiles,
+    missingFiles: files.filter((fileName) => !availableFiles.includes(fileName)),
     metadata
   };
 }

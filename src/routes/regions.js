@@ -1,4 +1,5 @@
 const express = require('express');
+const { requireAuthenticatedUser } = require('../lib/user-auth');
 const {
   getRegionsStatus,
   getMetadata,
@@ -22,6 +23,8 @@ function handleRegionsError(error, res) {
 
 function createRegionsRouter() {
   const router = express.Router();
+
+  router.use(requireAuthenticatedUser);
 
   router.get('/status', (req, res) => {
     res.json(getRegionsStatus());
