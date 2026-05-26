@@ -13,6 +13,16 @@ const citySelect = document.getElementById('city-select');
 const districtSelect = document.getElementById('district-select');
 const villageCount = document.getElementById('village-count');
 const villagesBody = document.getElementById('villages-body');
+const regenerateForm = document.getElementById('regenerate-form');
+const adminTokenInput = document.getElementById('admin-token');
+const provinceCodesInput = document.getElementById('province-codes');
+const regenConcurrencyInput = document.getElementById('regen-concurrency');
+const regenAllInput = document.getElementById('regen-all');
+const regenerateButton = document.getElementById('regenerate-button');
+const toastRegion = document.getElementById('toast-region');
+
+const maxToasts = 3;
+const toastDurationMs = 5000;
 
 function getToken() {
   return window.localStorage.getItem(tokenStorageKey);
@@ -53,6 +63,32 @@ function showRegions() {
   sessionEmail.textContent = user && user.email ? user.email : '';
   loginView.hidden = true;
   regionsView.hidden = false;
+}
+
+function removeToast(toast) {
+  if (toast && toast.parentNode) {
+    toast.parentNode.removeChild(toast);
+  }
+}
+
+function showToast(title, message, type = 'info', options = {}) {
+  while (toastRegion.children.length >= maxToasts) {
+    removeToast(toastRegion.firstElementChild);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <strong>${title}</strong>
+    <span>${message}</span>
+  `;
+  toastRegion.appendChild(toast);
+
+  if (!options.sticky) {
+    window.setTimeout(() => removeToast(toast), toastDurationMs);
+  }
+
+  return toast;
 }
 
 async function apiFetch(url, options = {}) {
@@ -143,6 +179,23 @@ async function loadVillages(districtCode) {
   renderVillages(payload.data);
 }
 
+function buildRegeneratePayload() {
+  const all = regenAllInput.checked;
+  const provinceCodes = provinceCodesInput.value
+    .split(',')
+    .map((code) => code.trim())
+    .filter(Boolean);
+  const concurrency = Number(regenConcurrencyInput.value || 8);
+
+  if (!all && provinceCodes.length === 0) {
+    throw new Error('Enter province codes or choose regenerate all provinces');
+  }
+
+  return all
+    ? { all: true, concurrency }
+    : { province_codes: provinceCodes, concurrency };
+}
+
 loginForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   clearError(loginError);
@@ -224,6 +277,52 @@ districtSelect.addEventListener('change', async () => {
     await loadVillages(districtSelect.value);
   } catch (error) {
     showError(appError, error.message);
+  }
+});
+
+regenAllInput.addEventListener('change', () => {
+  provinceCodesInput.disabled = regenAllInput.checked;
+});
+
+regenerateForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  clearError(appError);
+
+  let loadingToast;
+
+  try {
+    const adminToken = adminTokenInput.value.trim();
+
+    if (!adminToken) {
+      throw new Error('Admin token is required');
+    }
+
+    const payload = buildRegeneratePayload();
+    regenerateButton.disabled = true;
+    loadingToast = showToast('Regenerating data', 'Fetching provinces, regencies, districts, and villages.', 'loading', { sticky: true });
+
+    const response = await fetch('/api/admin/regions/regenerate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-token': adminToken
+      },
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Regeneration failed');
+    }
+
+    removeToast(loadingToast);
+    showToast('Regeneration complete', `${result.metadata.counts.provinces} provinces, ${result.metadata.counts.cities} regencies, ${result.metadata.counts.districts} districts, ${result.metadata.counts.villages} villages.`, 'success');
+    await loadProvinces();
+  } catch (error) {
+    removeToast(loadingToast);
+    showToast('Regeneration failed', error.message, 'error');
+  } finally {
+    regenerateButton.disabled = false;
   }
 });
 

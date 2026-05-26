@@ -324,6 +324,8 @@ Regenerates region JSON server-side, writes the current dataset, creates a times
 
 This endpoint requires `ADMIN_API_TOKEN` to be configured on the server.
 
+The logged-in browser UI includes an admin panel for this route. It can regenerate provinces, regencies, districts, and villages for selected province codes or for all provinces. Loading and result notifications auto-dismiss after five seconds, with at most three notifications visible.
+
 Authentication headers, choose one:
 
 ```http

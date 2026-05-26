@@ -25,6 +25,7 @@ Implemented:
 - Region data generator and validator
 - Versioned generated JSON under `data/regions/`
 - Protected server-side region regeneration route
+- Login-gated browser UI with an admin regeneration panel
 
 Not yet implemented:
 
@@ -320,6 +321,8 @@ curl -X POST http://localhost:3001/api/admin/regions/regenerate \
 ```
 
 The route runs server-side, writes `data/regions/current`, creates a timestamped version, and validates the output.
+
+The logged-in browser UI also includes an admin panel for regeneration. Enter `ADMIN_API_TOKEN`, choose province codes or all provinces, then use the regeneration button. The UI shows loading and result notifications with at most three visible at once.
 
 ## Security
 

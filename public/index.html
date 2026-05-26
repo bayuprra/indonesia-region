@@ -55,6 +55,33 @@
           </label>
         </section>
 
+        <section class="admin-panel">
+          <div>
+            <p class="eyebrow">Admin</p>
+            <h2>Regenerate region data</h2>
+            <p class="muted-text">Regenerates provinces, regencies, districts, and villages through the protected server route.</p>
+          </div>
+          <form id="regenerate-form" class="admin-grid">
+            <label>
+              Admin token
+              <input id="admin-token" name="admin-token" type="password" autocomplete="off" placeholder="ADMIN_API_TOKEN" required>
+            </label>
+            <label>
+              Province codes
+              <input id="province-codes" name="province-codes" type="text" inputmode="numeric" placeholder="31,32">
+            </label>
+            <label>
+              Concurrency
+              <input id="regen-concurrency" name="regen-concurrency" type="number" min="1" max="16" value="8">
+            </label>
+            <label class="checkbox-row">
+              <input id="regen-all" name="regen-all" type="checkbox">
+              Regenerate all provinces
+            </label>
+            <button id="regenerate-button" type="submit">Regenerate provinces, regencies, districts & villages</button>
+          </form>
+        </section>
+
         <section class="data-panel">
           <div class="panel-header">
             <h2>Villages</h2>
@@ -75,6 +102,7 @@
         <p id="app-error" class="error-message" hidden></p>
       </section>
     </main>
+    <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="false"></div>
     <script src="/app.js"></script>
   </body>
 </html>
