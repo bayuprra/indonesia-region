@@ -19,6 +19,8 @@ Implemented:
 
 - `GET /api/health`
 - Static file serving from `public/`
+- Server-side Supabase client wiring
+- Cloudflare Workers deployment configuration
 
 Not yet implemented:
 
@@ -39,6 +41,15 @@ Not yet implemented:
 npm install
 ```
 
+Copy the example environment files before setting credentials:
+
+```sh
+cp .env.example .env
+cp .dev.vars.example .dev.vars
+```
+
+Use `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` only on the server side. Do not place the service role key in frontend code or static files.
+
 ## Run
 
 ```sh
@@ -53,6 +64,12 @@ For development with automatic restart on file changes:
 npm run dev
 ```
 
+To run through Cloudflare Workers locally:
+
+```sh
+npm run cloudflare:dev
+```
+
 ## Available Commands
 
 Only commands currently defined in `package.json` are listed here.
@@ -61,10 +78,14 @@ Only commands currently defined in `package.json` are listed here.
 npm install
 npm start
 npm run dev
+npm run cloudflare:dev
+npm run deploy
 ```
 
 - `npm start`: runs `node src/server.js`
 - `npm run dev`: runs `node --watch src/server.js`
+- `npm run cloudflare:dev`: runs the Cloudflare Worker locally with Wrangler
+- `npm run deploy`: deploys the Worker with Wrangler
 - Build: Not yet defined
 - Test: Not yet defined
 - Lint: Not yet defined
@@ -84,8 +105,29 @@ Example response:
 {
   "status": "ok",
   "uptime": 12.34,
-  "timestamp": "2026-05-26T00:00:00.000Z"
+  "timestamp": "2026-05-26T00:00:00.000Z",
+  "services": {
+    "supabase": {
+      "configured": false,
+      "urlConfigured": false,
+      "serviceRoleKeyConfigured": false
+    }
+  }
 }
+```
+
+## Cloudflare Deployment
+
+Cloudflare Workers is configured in `wrangler.jsonc`.
+
+Before deploying, authenticate Wrangler and set server-side secrets:
+
+```sh
+npx wrangler login
+npx wrangler secret put SUPABASE_URL
+npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+npx wrangler secret put ADMIN_API_TOKEN
+npm run deploy
 ```
 
 ## Planned Region Data Design
