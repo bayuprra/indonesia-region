@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Indonesia Regions API Docs</title>
+    <link rel="stylesheet" href="/api-docs.css">
+  </head>
+  <body>
+    <main class="docs-shell">
+      <aside class="docs-sidebar">
+        <a class="brand" href="/">
+          <span>IR</span>
+          <strong>Indonesia Regions</strong>
+        </a>
+        <nav id="docs-nav" aria-label="API sections"></nav>
+      </aside>
+
+      <section class="docs-main">
+        <header class="docs-hero">
+          <div>
+            <p class="eyebrow">API Reference</p>
+            <h1>Indonesia Regions API</h1>
+            <p class="hero-copy">Authenticated endpoints for Indonesian administrative region data, generated from versioned JSON and guarded by Supabase login.</p>
+          </div>
+          <div class="hero-actions">
+            <a href="/api/openapi.json">OpenAPI JSON</a>
+            <a href="/docs/API.md">Markdown</a>
+          </div>
+        </header>
+
+        <section class="quick-grid" aria-label="API quick facts">
+          <div>
+            <span>Base URL</span>
+            <code id="base-url">/</code>
+          </div>
+          <div>
+            <span>User Auth</span>
+            <code>Bearer JWT</code>
+          </div>
+          <div>
+            <span>Admin Auth</span>
+            <code>x-admin-token</code>
+          </div>
+          <div>
+            <span>Static JSON</span>
+            <code>403 blocked</code>
+          </div>
+        </section>
+
+        <section class="auth-guide">
+          <h2>Auth Flow</h2>
+          <ol>
+            <li>Create or invite users in Supabase Auth.</li>
+            <li>Call <code>POST /api/auth/login</code> with email and password.</li>
+            <li>Send <code>Authorization: Bearer &lt;access_token&gt;</code> on region data requests.</li>
+          </ol>
+        </section>
+
+        <section id="endpoint-sections" class="endpoint-sections"></section>
+      </section>
+    </main>
+    <script src="/api-docs.js"></script>
+  </body>
+</html>

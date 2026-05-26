@@ -101,6 +101,7 @@ npm run deploy
 ## Current API
 
 Full API documentation is available in [docs/API.md](./docs/API.md).
+The app also serves a Swagger-like documentation UI at `/docs` and the OpenAPI spec at `/api/openapi.json`.
 
 ### Health Check
 

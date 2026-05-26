@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const { getSupabaseConfigStatus } = require('./lib/supabase');
 const { getRegionsStatus } = require('./lib/regions-store');
+const { createOpenApiSpec } = require('./lib/openapi');
 const { denyRegionJson } = require('./middleware/deny-region-json');
 const { createAuthRouter } = require('./routes/auth');
 const { createAdminRegionsRouter } = require('./routes/admin-regions');
@@ -15,6 +16,18 @@ function createApp() {
   app.use(express.urlencoded({ extended: true }));
   app.use(denyRegionJson);
   app.use(express.static(path.join(__dirname, '..', 'public')));
+
+  app.get('/docs', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'api-docs.html'));
+  });
+
+  app.get('/docs/API.md', (req, res) => {
+    res.type('text/markdown').sendFile(path.join(__dirname, '..', 'docs', 'API.md'));
+  });
+
+  app.get('/api/openapi.json', (req, res) => {
+    res.json(createOpenApiSpec());
+  });
 
   app.get('/api/health', (req, res) => {
     res.json({
