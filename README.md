@@ -97,6 +97,8 @@ npm run deploy
 
 ## Current API
 
+Full API documentation is available in [docs/API.md](./docs/API.md).
+
 ### Health Check
 
 ```http
